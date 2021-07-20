@@ -2,7 +2,6 @@ package protodesc
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/bojand/ghz/internal"
@@ -112,7 +111,6 @@ func TestParseServiceMethod(t *testing.T) {
 }
 
 func testParseServiceMethodSuccess(t *testing.T, svcAndMethod string, expectedService string, expectedMethod string) {
-	fmt.Println(svcAndMethod, expectedService)
 	service, method, err := parseServiceMethod(svcAndMethod)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedService, service)
