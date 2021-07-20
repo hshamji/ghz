@@ -2,6 +2,7 @@ package protodesc
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/bojand/ghz/internal"
@@ -103,12 +104,15 @@ func TestParseServiceMethod(t *testing.T) {
 	testParseServiceMethodSuccess(t, ".Service.Method", "Service", "Method")
 	testParseServiceMethodSuccess(t, "Service/Method", "Service", "Method")
 	testParseServiceMethodSuccess(t, ".Service/Method", "Service", "Method")
+	testParseServiceMethodSuccess(t, "package/Service/Method", "package/Service", "Method")
+	testParseServiceMethodSuccess(t, "a/prefix/to.a.Service/Method", "a/prefix/to.a.Service", "Method")
 	testParseServiceMethodError(t, "")
 	testParseServiceMethodError(t, ".")
-	testParseServiceMethodError(t, "package/Service/Method")
+
 }
 
 func testParseServiceMethodSuccess(t *testing.T, svcAndMethod string, expectedService string, expectedMethod string) {
+	fmt.Println(svcAndMethod, expectedService)
 	service, method, err := parseServiceMethod(svcAndMethod)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedService, service)
