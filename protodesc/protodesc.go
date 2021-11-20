@@ -144,13 +144,14 @@ func findServiceSymbol(resolved map[string]*desc.FileDescriptor, fullyQualifiedN
 }
 
 // parseServiceMethod parses the fully-qualified service name without a leading "."
-// and the method name from the input string.
+// and the method name from the input string. Also allows service prefixes.
 //
 // valid inputs:
 //   package.Service.Method
 //   .package.Service.Method
 //   package.Service/Method
 //   .package.Service/Method
+//   a/prefix/to.a.Service/Method
 func parseServiceMethod(svcAndMethod string) (string, string, error) {
 	if len(svcAndMethod) == 0 {
 		return "", "", errNoMethodNameSpecified
@@ -172,7 +173,16 @@ func parseServiceMethod(svcAndMethod string) (string, string, error) {
 		split := strings.Split(svcAndMethod, "/")
 		return split[0], split[1], nil
 	default:
-		return "", "", newInvalidMethodNameError(svcAndMethod)
+		split := strings.Split(svcAndMethod, "/")
+		l := len(split)
+		svcSuffix, method, err := parseServiceMethod(strings.Join(split[l-2:], "/"))
+
+		if err != nil {
+			return "", "", newInvalidMethodNameError(svcAndMethod)
+		}
+
+		svcPrefix := strings.Join(split[:l-2], "/")
+			return svcPrefix + "/" + svcSuffix, method, nil
 	}
 }
 
